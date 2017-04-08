@@ -1,0 +1,71 @@
+ods html close;
+ods html;
+*Part A;
+DATA Clustering;
+INPUT obs$ Usual_Hours_Worked Education_Yrs Yearly_Earnings Race Sex A_AGE A_HGA Yearly_Expenses;
+
+DATALINES;
+1	40	13	44000	1	1	29	40	30800
+2	35	12	12000	1	2	57	39	8400
+3	70	11	54000	1	1	69	37	37800
+4	40	16	48200	1	1	30	43	33740
+5	38	12	24000	1	1	44	39	16800
+6	60	18	62000	1	2	45	44	43400
+7	40	13	17000	1	2	20	40	11900
+8	50	8	25000	2	1	60	33	17500
+9	40	11	10000	2	1	27	37	7000
+10	50	16	65000	1	1	56	43	45500
+11	45	12	30000	1	1	44	39	21000
+12	50	16	306731	1	1	37	43	214711.7
+13	50	11	37000	1	1	45	37	25900
+14	40	12	34000	1	1	51	39	23800
+15	40	13	25000	1	1	28	40	17500
+16	40	12	42000	1	1	44	39	29400
+17	40	16	68000	1	1	43	43	47600
+18	50	13	70000	1	1	52	40	49000
+19	40	12	25000	1	2	59	39	17500
+20	35	13	15400	1	2	30	40	10780
+21	40	13	56426	1	1	50	40	39498.2
+22	40	12	21087	1	1	28	39	14760.9
+23	40	13	50000	1	1	26	40	35000
+24	49	12	11500	2	2	26	39	8050
+25	60	12	40000	1	1	20	39	28000
+26	60	18	70000	1	2	45	46	49000
+27	45	18	62000	1	1	35	45	43400
+28	40	12	30000	1	1	30	39	21000
+29	40	16	20000	2	2	50	43	14000
+30	72	12	17360	1	2	30	39	12152
+31	50	12	32000	1	1	42	39	22400
+32	60	16	60000	1	1	30	43	42000
+33	40	11	9500	1	2	42	37	6650
+34	40	11	9000	1	1	48	37	6300
+35	40	12	0		1	1	21	39	0
+36	60	11.5 38000	1	1	48	38  26600
+;
+Run;
+PROC PRINT DATA = Clustering;
+RUN;
+proc fastclus data = Clustering maxc=4 maxiter=20 out=clust noprint ;
+var Usual_Hours_Worked Education_Yrs Yearly_Earnings Race Sex A_AGE A_HGA Yearly_Expenses;
+run;
+proc freq;
+tables cluster*obs;
+run;
+ods graphics on;
+*Part B;
+proc varclus data=Clustering outtree=Tree centroid maxclusters=4 noprint
+             plots=dendrogram(vertical height=ncl); *Plot Dendrogram;
+   var Usual_Hours_Worked Education_Yrs Yearly_Earnings Race Sex A_AGE A_HGA Yearly_Expenses;
+run;
+*Single linkage clustering;
+proc cluster method=single outtree=clust1 data=Clustering ;
+  var Usual_Hours_Worked Education_Yrs Yearly_Earnings Race Sex A_AGE A_HGA Yearly_Expenses;
+  run;
+proc tree horizontal nclusters=4 out=clust2;
+  run;
+*Complete Linkage clustering;
+proc cluster method=complete outtree=clust1 data=Clustering ;
+  var Usual_Hours_Worked Education_Yrs Yearly_Earnings Race Sex A_AGE A_HGA Yearly_Expenses;
+  run;
+proc tree horizontal nclusters=4 out=clust2;
+  run;

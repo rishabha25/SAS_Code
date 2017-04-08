@@ -1,0 +1,38 @@
+*Import Data;
+data q4; 
+  infile 'C:\Users\user_2\Desktop\Rishabh\Data-Linear.csv' dsd dlm=',' firstobs=2; 
+  input obs engweight size bore price; 
+run;
+
+proc print data = q4;
+run;
+*Find mean of all variables;
+PROC means data = q4;
+	var engweight size bore price;
+run;
+
+*Conduct Univariate Analysis;
+PROC UNIVARIATE data = q4;
+	var price;
+	HISTOGRAM;
+run;
+
+*Correlation matrix for data set;
+proc corr data=q4 noprob;
+     var engweight size bore price;
+run;
+
+*Plot price vs engweight in 2D plane;
+PROC Gplot data = q4;
+plot price * engweight;
+RUN;
+
+*Linear Regression price vs engweight;
+proc reg data = q4;
+model price = engweight;
+RUN;
+
+*Multiple Linear Regression price vs engweight size bore;
+proc reg data = q4;
+model price = engweight size bore;
+RUN;

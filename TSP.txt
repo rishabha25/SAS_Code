@@ -1,0 +1,40 @@
+/*WITHOUT DATALINES*/
+ODS HTML CLOSE;
+ODS HTML;
+PROC OPTMODEL;
+/*SPECIFIC PARAMETERS*/
+SET ORI = {'F1', 'F2', 'F3'};     /* ORIGINS*/
+SET DES = {'W1', 'W2', 'W3','W4'};    * DESTINATION;
+NUMBER C{ORI,DES} = [10 0 20 11 12 7 9 20 0 14 16 18];     *COSTS;
+NUMBER A{ORI} = [20 25 15];
+NUMBER B{DES} = [10 15 15 20];
+
+/*MODEL DESCRIPTION*/
+VAR X{ORI,DES} >= 0;
+MIN TOTAL_COST = SUM{I IN ORI, J IN DES}C[I,J]*X[I,J];
+CON SUPPLY{I IN ORI} :  SUM{J IN DES}X[I,J] = A[I];
+CON DEMAND{J IN DES} :  SUM{I IN ORI}X[I,J] = B[J];
+SOLVE;
+PRINT X;
+QUIT;
+
+/*USING DATALINES*/
+ODS HTML CLOSE;
+ODS HTML;
+Data cost;
+input source $ supply W1 W2 W3 W4;
+datalines;
+demand   .   10  15  15  20
+f1       20    10  0   20  11
+f2       25    12  7   9   20
+f3       15    0   14  16  18
+;
+proc print data = cost;
+run;
+
+proc trans
+nothrunet data=cost out=transout;
+supply supply;
+id source;
+proc print;
+run;

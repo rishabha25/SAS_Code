@@ -1,0 +1,31 @@
+
+proc fcmp outlib=sasuser.userfuncs.mymath;
+function circ_area(r);
+y = 3.14 * r * r;
+return (y);
+endsub;
+options cmplib = sasuser.userfuncs;
+
+
+data _null_;
+a = 4;
+area = circ_area(a);
+put area=;
+run;
+
+
+
+%macro circle_area(dat);
+data _null_;
+set &dat;
+y = 3.14 * r * r; put y=;
+%mend;
+
+data temp;
+input r;
+cards;
+4
+;
+run;
+%circle_area(temp);
+run;
